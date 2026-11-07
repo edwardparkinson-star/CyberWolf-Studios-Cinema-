@@ -1,1 +1,128 @@
+from pathlib import Path
+import json, shutil, zipfile
 
+base = Path("/mnt/data/CyberWolf_CINEMA_Private")
+(base / "assets").mkdir(parents=True, exist_ok=True)
+(base / "components").mkdir(parents=True, exist_ok=True)
+
+src = Path("/mnt/data/1000019781.webp")
+if not src.exists():
+    raise FileNotFoundError("The uploaded CyberWolf calling-card image is not available at the supplied path.")
+shutil.copy2(src, base / "assets/cyberwolf-calling-card.webp")
+
+(base / "package.json").write_text(json.dumps({
+  "name":"cyberwolf-cinema-private","version":"0.1.0","private":True,"main":"expo/AppEntry",
+  "scripts":{"start":"expo start","android":"expo start --android","ios":"expo start --ios","web":"expo start --web"},
+  "dependencies":{"expo":"~54.0.0","expo-status-bar":"~3.0.0","react":"19.1.0","react-native":"0.81.4","react-native-web":"^0.21.0"},
+  "devDependencies":{"@types/react":"~19.1.0","typescript":"~5.9.2"}
+}, indent=2), encoding="utf-8")
+
+(base / "app.json").write_text(json.dumps({"expo":{
+  "name":"CyberWolf CINEMA","slug":"cyberwolf-cinema-private","version":"0.1.0",
+  "orientation":"portrait","userInterfaceStyle":"dark","newArchEnabled":True,
+  "ios":{"supportsTablet":True},"android":{"package":"com.cyberwolfstudios.cinema"},
+  "web":{"bundler":"metro"}
+}}, indent=2), encoding="utf-8")
+
+(base / "App.tsx").write_text("""import React from 'react';
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { BrandCallingCard } from './components/BrandCallingCard';
+
+const C = { bg:'#090909', panel:'#171114', red:'#FF1744', pink:'#FF1493', muted:'#B8AEB3', white:'#F8F4F6' };
+
+export default function App() {
+  const steps = [
+    ['01','Create a project','Start with a track and creative direction.'],
+    ['02','Build the visual plan','Organize scenes around verses, hooks, and transitions.'],
+    ['03','Render and review','Prepare the video pipeline and quality checks.'],
+    ['04','Prepare promotion','Create platform-ready edits after approval.']
+  ];
+  return <SafeAreaView style={s.safe}>
+    <StatusBar barStyle="light-content" backgroundColor={C.bg}/>
+    <ScrollView contentContainerStyle={s.page}>
+      <Text style={s.eyebrow}>CYBERWOLF STUDIOS & VEX-35 INC</Text>
+      <Text style={s.title}>CyberWolf <Text style={s.red}>CINEMA</Text></Text>
+      <Text style={s.muted}>Your music. Your vision. Your cinema.</Text>
+      <View style={s.hero}>
+        <Text style={s.pink}>PRIVATE CREATOR WORKSPACE</Text>
+        <Text style={s.heroTitle}>Turn your sound into a visual experience.</Text>
+        <Text style={s.body}>Plan full-length music videos, shape scenes around your track, and prepare promotional edits from one creative workspace.</Text>
+        <Text style={s.lock}>●  PRIVATE DEVELOPMENT · NOT PUBLICLY DEPLOYED</Text>
+      </View>
+      <Text style={s.heading}>STUDIO WORKFLOW</Text>
+      {steps.map(([n,t,d]) => <View key={n} style={s.tile}>
+        <Text style={s.red}>{n}</Text><Text style={s.tileTitle}>{t}</Text><Text style={s.body}>{d}</Text>
+      </View>)}
+      <View style={s.notice}>
+        <Text style={s.pink}>BUILD STATUS</Text>
+        <Text style={s.body}>This is the initial app foundation. Authentication, cloud storage, AI generation, rendering, billing, and social publishing still require implementation and provider setup. No public release is enabled.</Text>
+      </View>
+      <BrandCallingCard/>
+      <Text style={s.footer}>© CyberWolf Studios & Vex-35 Inc · Private development build</Text>
+    </ScrollView>
+  </SafeAreaView>;
+}
+const s = StyleSheet.create({
+ safe:{flex:1,backgroundColor:C.bg},page:{padding:22,paddingTop:38,paddingBottom:36,maxWidth:980,width:'100%',alignSelf:'center'},
+ eyebrow:{color:C.pink,fontSize:10,letterSpacing:2.5,fontWeight:'800',marginBottom:12},
+ title:{color:C.white,fontSize:34,fontWeight:'900',letterSpacing:-1},red:{color:C.red,fontWeight:'900'},
+ muted:{color:C.muted,fontSize:14,marginTop:8},hero:{backgroundColor:C.panel,borderColor:'#55202F',borderWidth:1,borderRadius:20,padding:22,marginTop:28,marginBottom:30},
+ pink:{color:C.pink,fontSize:10,fontWeight:'900',letterSpacing:2},heroTitle:{color:C.white,fontSize:27,fontWeight:'800',lineHeight:34,marginTop:12},
+ body:{color:C.muted,fontSize:13,lineHeight:21,marginTop:7},lock:{color:'#FF9AB2',fontSize:9,fontWeight:'800',letterSpacing:1,marginTop:18},
+ heading:{color:C.white,fontSize:12,fontWeight:'800',letterSpacing:2,marginBottom:13},
+ tile:{backgroundColor:'#121212',borderColor:'#292329',borderWidth:1,borderRadius:14,padding:16,marginBottom:10},
+ tileTitle:{color:C.white,fontSize:16,fontWeight:'700',marginTop:7},
+ notice:{borderLeftWidth:3,borderLeftColor:C.pink,backgroundColor:'#171217',padding:16,marginTop:14,marginBottom:26},
+ footer:{color:'#726970',textAlign:'center',fontSize:9,marginTop:16,letterSpacing:.5}
+});
+""", encoding="utf-8")
+
+(base / "components/BrandCallingCard.tsx").write_text("""import React from 'react';
+import { Image, StyleSheet, View } from 'react-native';
+
+// Official CyberWolf fan-card artwork, integrated as the bottom-of-page brand signature.
+export function BrandCallingCard() {
+  return <View style={styles.wrap} accessibilityLabel="CyberWolf official calling card">
+    <Image source={require('../assets/cyberwolf-calling-card.webp')}
+      style={styles.image} resizeMode="contain"
+      accessibilityLabel="CyberWolf wolf and circuit-board gold signature calling card"/>
+  </View>;
+}
+const styles = StyleSheet.create({
+  wrap:{width:'100%',backgroundColor:'#050505',borderRadius:12,overflow:'hidden',borderWidth:1,borderColor:'#3A3021',padding:4},
+  image:{width:'100%',aspectRatio:1536/1024}
+});
+""", encoding="utf-8")
+
+(base / "README.md").write_text("""# CyberWolf CINEMA — Private Development Foundation
+
+## Included
+- Expo / React Native foundation for Android, iOS, and web.
+- CyberWolf CINEMA black, red, and hot-pink interface.
+- User-provided calling-card image integrated at the bottom of the home screen.
+- Initial creator-workspace dashboard and workflow placeholders.
+
+## Run locally
+1. Install Node.js LTS.
+2. Run `npm install`.
+3. Run `npx expo start`.
+4. Press `w` for web, or scan the QR code with Expo Go.
+
+## Not implemented yet
+Authentication, database, secure cloud media storage, audio analysis, AI video generation, lip-sync, rendering workers, billing, social account connections, publishing, analytics, and production monitoring.
+
+## Release restriction
+Private development only. Do not deploy publicly or onboard customers until legal identity, company IP ownership, provider commercial licenses, privacy/data terms, customer terms, platform permissions, and security review are complete.
+
+Company identity: CyberWolf Studios & Vex-35 Inc
+""", encoding="utf-8")
+
+zip_path = Path("/mnt/data/CyberWolf_CINEMA_Private_Development_Foundation.zip")
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
+    for p in base.rglob("*"):
+        if p.is_file():
+            z.write(p, p.relative_to(base.parent))
+
+print("Created and verified:", zip_path)
+print("Calling-card image integrated:", (base / "assets/cyberwolf-calling-card.webp").is_file())
+print("Project files:", len([p for p in base.rglob("*") if p.is_file()]))
